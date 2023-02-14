@@ -78,6 +78,9 @@ type BinaryReader struct {
 	stream *bytes.Buffer
 }
 
+func FromBytes(b []byte) *BinaryReader {
+	return NewBinaryReader(bytes.NewBuffer(b))
+}
 func NewBinaryReader(stream *bytes.Buffer) *BinaryReader {
 	return &BinaryReader{stream: stream}
 }
