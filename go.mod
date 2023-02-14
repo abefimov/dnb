@@ -1,3 +1,3 @@
-module github.com/dnb
+module github.com/abefimov/dnb
 
         go 1.19
