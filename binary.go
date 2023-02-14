@@ -70,6 +70,10 @@ func (bw *BinaryWriter) Write(value any) {
 	}
 }
 
+func (bw *BinaryWriter) Bytes() []byte {
+	return bw.stream.Bytes()
+}
+
 type BinaryReader struct {
 	stream *bytes.Buffer
 }

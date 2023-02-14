@@ -33,7 +33,7 @@ func TestBinaryWriter_WriteBool(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			bw := NewBinaryWriter(bytes.NewBuffer([]byte{}))
 			bw.WriteBool(tt.value)
-			AssertArrays(t, tt.expected, bw.stream.Bytes())
+			AssertArrays(t, tt.expected, bw.Bytes())
 		})
 	}
 }
@@ -51,7 +51,7 @@ func TestBinaryWriter_WriteInt32(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			bw := NewBinaryWriter(bytes.NewBuffer([]byte{}))
 			bw.WriteInt32(tt.value)
-			AssertArrays(t, tt.expected, bw.stream.Bytes())
+			AssertArrays(t, tt.expected, bw.Bytes())
 		})
 	}
 }
@@ -69,7 +69,7 @@ func TestBinaryWriter_WriteString(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			bw := NewBinaryWriter(bytes.NewBuffer([]byte{}))
 			bw.WriteString(tt.value)
-			AssertArrays(t, tt.expected, bw.stream.Bytes())
+			AssertArrays(t, tt.expected, bw.Bytes())
 		})
 	}
 }
@@ -88,7 +88,7 @@ func TestBinaryWriter_WriteBytes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			bw := NewBinaryWriter(bytes.NewBuffer([]byte{}))
 			bw.WriteBytes(tt.value)
-			AssertArrays(t, tt.expected, bw.stream.Bytes())
+			AssertArrays(t, tt.expected, bw.Bytes())
 		})
 	}
 }
@@ -106,7 +106,7 @@ func TestBinaryWriter_WriteByte(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			bw := NewBinaryWriter(bytes.NewBuffer([]byte{}))
 			bw.WriteByte(tt.value)
-			AssertArrays(t, tt.expected, bw.stream.Bytes())
+			AssertArrays(t, tt.expected, bw.Bytes())
 		})
 	}
 }
@@ -133,7 +133,7 @@ func TestBinaryWriter(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			bw := NewBinaryWriter(bytes.NewBuffer([]byte{}))
 			bw.Write(tt.value)
-			AssertArrays(t, tt.expected, bw.stream.Bytes())
+			AssertArrays(t, tt.expected, bw.Bytes())
 		})
 	}
 }
