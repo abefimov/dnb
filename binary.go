@@ -110,8 +110,9 @@ func (br *BinaryReader) ReadBytes() []byte {
 	return br.stream.Next(int(length))
 }
 
-func (br *BinaryReader) ReadByte() (byte, error) {
-	return br.stream.ReadByte()
+func (br *BinaryReader) ReadOneByte() byte {
+	b, _ := br.stream.ReadByte()
+	return b
 }
 
 func (br *BinaryReader) Read(data any) {
@@ -127,7 +128,7 @@ func (br *BinaryReader) Read(data any) {
 	case *string:
 		*data = br.ReadString()
 	case *byte:
-		*data, _ = br.ReadByte()
+		*data = br.ReadOneByte()
 	case *[]byte:
 		*data = br.ReadBytes()
 	}
