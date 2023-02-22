@@ -3,6 +3,7 @@ package dnb
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 )
 
 type BinaryWriter struct {
@@ -85,53 +86,110 @@ func NewBinaryReader(stream *bytes.Buffer) *BinaryReader {
 	return &BinaryReader{stream: stream}
 }
 
-func (br *BinaryReader) ReadInt32() int32 {
+func (br *BinaryReader) ReadInt32() (int32, error) {
+	if br.stream.Len() < 4 {
+		return 0, fmt.Errorf("not enough bytes, at least %v byte is needed, array length = %v", 4, br.stream.Len())
+	}
 	var p int32
 	_ = binary.Read(br.stream, binary.LittleEndian, &p)
-	return p
+	return p, nil
 }
 
-func (br *BinaryReader) ReadString() string {
+func (br *BinaryReader) ReadString() (string, error) {
+	if br.stream.Len() < 1 {
+		return "", fmt.Errorf("not enough bytes, at least %v byte is needed, array length = %v", 1, br.stream.Len())
+	}
 	length := FromLeb128Bytes(br.stream.Next(1))
-	return string(br.stream.Next(length)[:])
+	if br.stream.Len() < length {
+		return "", fmt.Errorf("not enough bytes, at least %v byte is needed, array length = %v", length, br.stream.Len())
+	}
+	return string(br.stream.Next(length)[:]), nil
 }
 
-func (br *BinaryReader) ReadBool() bool {
-	i := br.stream.Next(1)
-	if i[0] == 0 {
-		return false
+func (br *BinaryReader) ReadBool() (bool, error) {
+	if br.stream.Len() < 1 {
+		return false, fmt.Errorf("not enough bytes, at least %v byte is needed, array length = %v", 1, br.stream.Len())
+	}
+	i, err := br.stream.ReadByte()
+	if err != nil {
+		return false, err
+	}
+	if i == 0 {
+		return false, nil
 	} else {
-		return true
+		return true, nil
 	}
 }
 
-func (br *BinaryReader) ReadBytes() []byte {
-	length := br.ReadInt32()
-	return br.stream.Next(int(length))
+func (br *BinaryReader) ReadBytes() ([]byte, error) {
+	length, err := br.ReadInt32()
+	if err != nil {
+		return nil, err
+	}
+	l := int(length)
+	if br.stream.Len() < l {
+		return nil, fmt.Errorf("not enough bytes, at least %v byte is needed, array length = %v", l, br.stream.Len())
+	}
+	return br.stream.Next(l), nil
 }
 
-func (br *BinaryReader) ReadOneByte() byte {
-	b, _ := br.stream.ReadByte()
-	return b
+func (br *BinaryReader) ReadOneByte() (byte, error) {
+	if br.stream.Len() < 1 {
+		return 0, fmt.Errorf("not enough bytes, at least %v byte is needed, array length = %v", 1, br.stream.Len())
+	}
+	b, err := br.stream.ReadByte()
+	if err != nil {
+		return 0, err
+	}
+	return b, nil
 }
 
-func (br *BinaryReader) Read(data any) {
+func (br *BinaryReader) Read(data any) error {
 	switch data := data.(type) {
 	case *bool:
-		*data = br.ReadBool()
+		v, err := br.ReadBool()
+		if err != nil {
+			return err
+		}
+		*data = v
 	case *int:
-		*data = int(br.ReadInt32())
+		v, err := br.ReadInt32()
+		if err != nil {
+			return err
+		}
+		*data = int(v)
 	case *int16:
-		*data = int16(br.ReadInt32())
+		v, err := br.ReadInt32()
+		if err != nil {
+			return err
+		}
+		*data = int16(v)
 	case *int32:
-		*data = br.ReadInt32()
+		v, err := br.ReadInt32()
+		if err != nil {
+			return err
+		}
+		*data = v
 	case *string:
-		*data = br.ReadString()
+		v, err := br.ReadString()
+		if err != nil {
+			return err
+		}
+		*data = v
 	case *byte:
-		*data = br.ReadOneByte()
+		v, err := br.ReadOneByte()
+		if err != nil {
+			return err
+		}
+		*data = v
 	case *[]byte:
-		*data = br.ReadBytes()
+		v, err := br.ReadBytes()
+		if err != nil {
+			return err
+		}
+		*data = v
 	}
+	return nil
 }
 
 func FromLeb128Bytes(l []byte) int {
