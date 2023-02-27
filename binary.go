@@ -18,6 +18,10 @@ func (bw *BinaryWriter) WriteInt32(value int32) {
 	_ = binary.Write(bw.stream, binary.LittleEndian, value)
 }
 
+func (bw *BinaryWriter) WriteInt64(value int64) {
+	_ = binary.Write(bw.stream, binary.LittleEndian, value)
+}
+
 func (bw *BinaryWriter) WriteString(value string) {
 	leb := GetLeb128Bytes(len(value))
 	_, _ = bw.stream.Write(leb)
@@ -50,12 +54,16 @@ func (bw *BinaryWriter) Write(value any) {
 		bw.WriteInt32(int32(*v))
 	case *int32:
 		bw.WriteInt32(*v)
+	case *int64:
+		bw.WriteInt64(*v)
 	case int:
 		bw.WriteInt32(int32(v))
 	case int16:
 		bw.WriteInt32(int32(v))
 	case int32:
 		bw.WriteInt32(v)
+	case int64:
+		bw.WriteInt64(v)
 	case *string:
 		bw.WriteString(*v)
 	case string:
@@ -190,6 +198,14 @@ func (br *BinaryReader) Read(data any) error {
 		*data = v
 	}
 	return nil
+}
+
+func (br *BinaryReader) Len() int {
+	return br.stream.Len()
+}
+
+func (br *BinaryReader) Cap() int {
+	return br.stream.Cap()
 }
 
 func FromLeb128Bytes(l []byte) int {
